@@ -8,6 +8,7 @@ and unpacked to `AI_Procurement_Copilot/`. `live_mode.diff` holds the only code 
 | 1 | gemini-2.5-flash | HTTP 404 NOT_FOUND (model not available to new users) | `attempt1_gemini-2.5-flash_404/` |
 | 2 | gemini-3.5-flash (chosen from models.list) | HTTP 503 UNAVAILABLE (high demand) | `attempt2_gemini-3.5-flash_503/` |
 | 3 | gemini-3.5-flash (after cooldown) | ReadTimeout at the code's 25 s limit; conditional gemini-3.6-flash probe not run | `attempt3_gemini-3.5-flash_timeout/` |
+| 4 | gemini-3.6-flash (final single probe) | HTTP 503 UNAVAILABLE (high demand), no usage returned | `attempt4_gemini-3.6-flash_503/` |
 
 No attempt produced valid model advice. Public live evals and the live comparison were not run.
-Total generateContent calls across all attempts: 3, none successful. To verify an attempt's archive (2 or 3): `base64 -d live.zip.b64 > live.zip && sha256sum -c live.zip.sha256`.
+Total generateContent calls across all attempts: 4, none successful. To verify an attempt's archive (2, 3 or 4): `base64 -d live.zip.b64 > live.zip && sha256sum -c live.zip.sha256`.

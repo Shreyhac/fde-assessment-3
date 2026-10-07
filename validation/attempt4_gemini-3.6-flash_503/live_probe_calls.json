@@ -1,0 +1,22 @@
+{
+ "http_calls": 1,
+ "http_200": 0,
+ "aborted": true,
+ "calls": [
+  {
+   "n": 1,
+   "url_path": "/v1beta/models/gemini-3.6-flash:generateContent",
+   "local_key_header_sent": false,
+   "ms": 1253.7,
+   "status": 503,
+   "modelVersion": null,
+   "usage": null,
+   "error": {
+    "code": 503,
+    "status": "UNAVAILABLE",
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
+   },
+   "abort": "HTTP 503 UNAVAILABLE"
+  }
+ ]
+}
