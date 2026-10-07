@@ -1,0 +1,35 @@
+{
+ "baseline_requested": "gemini-2.5-flash",
+ "chosen": "gemini-3.5-flash",
+ "rule": "closest available Flash-class model supporting generateContent; prefer 2.5-flash, then stable flash, then flash-lite",
+ "reasoning": [
+  "models/gemini-2.5-flash is listed with generateContent, but attempt 1 generateContent returned HTTP 404 NOT_FOUND (\"no longer available to new users\"); not retried (no repeat paid call).",
+  "Stable (non-preview, version-pinned) Flash candidates listed: gemini-3.5-flash (3.5-flash-05-2026), gemini-3.6-flash, gemini-3.7-flash, gemini-3.8-flash; gemini-flash-latest is a moving alias; gemini-3-flash-preview is preview.",
+  "Chosen gemini-3.5-flash: lowest-version stable pinned Flash => closest to 2.5-flash. Not chosen from the 404 suggestion (gemini-3.8-flash)."
+ ],
+ "listed_flash_generateContent": [
+  "models/gemini-2.5-flash",
+  "models/gemini-2.5-flash-preview-tts",
+  "models/gemini-flash-latest",
+  "models/gemini-flash-lite-latest",
+  "models/gemini-2.5-flash-lite",
+  "models/gemini-2.5-flash-image",
+  "models/gemini-3-flash-preview",
+  "models/gemini-3.1-flash-lite-preview",
+  "models/gemini-3.1-flash-lite",
+  "models/gemini-3.1-flash-image-preview",
+  "models/gemini-3.1-flash-image",
+  "models/gemini-3.1-flash-lite-image",
+  "models/gemini-3.5-flash",
+  "models/gemini-3.5-flash-lite",
+  "models/gemini-omni-flash-preview",
+  "models/gemini-omni-1.1-flash",
+  "models/gemini-3.6-flash",
+  "models/gemini-3.7-flash",
+  "models/gemini-3.8-flash",
+  "models/gemini-3.1-flash-tts-preview",
+  "models/gemini-3.8-flash-tts",
+  "models/gemini-3.8-flash-lite-tts"
+ ],
+ "validation_only_not_final_graded_choice": true
+}

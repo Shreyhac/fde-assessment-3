@@ -1,0 +1,19 @@
+{
+ "http_calls": 1,
+ "http_200": 0,
+ "calls": [
+  {
+   "url_path": "/v1beta/models/gemini-3.5-flash:generateContent",
+   "local_key_header_sent": false,
+   "status": 503,
+   "modelVersion": null,
+   "usage": null,
+   "error": {
+    "code": 503,
+    "status": "UNAVAILABLE",
+    "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later."
+   },
+   "ms": 17693.3
+  }
+ ]
+}

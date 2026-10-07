@@ -1,0 +1,34 @@
+=== ATTEMPT 2 2026-10-07T14:47:40Z
+=== models.list: status 200 models 62 nextPage False
+=== model choice: gemini-3.5-flash (see model_choice.json); MODEL_NAME set per command only
+=== source changes vs package: src/model.py + src/solution.py only (validation/live_mode.diff), unchanged since attempt 1
+=== pytest offline
+........................................                                 [100%]
+40 passed in 1.60s
+=== preflight
+[ OK ] Python 3.13.16
+[ OK ] Required starter packages import successfully
+[ OK ] Dataset integrity checks passed (10 requests, 13 vendors)
+[ OK ] Output contract + 6 public evaluation cases are valid
+[ OK ] Mock vendor-risk API checks passed
+PRE-FLIGHT PASSED
+=== mock API pid=855 health={"status":"ok"}
+=== live probe REQ-1001 single (COPILOT_MODE=live MODEL_NAME=gemini-3.5-flash GEMINI_NETWORK_SECRET=1 GEMINI_API_KEY set: no)
+{
+ "llm_calls": 1,
+ "risk_flags": [
+  "existing_tool_overlap",
+  "llm_unavailable_or_invalid"
+ ],
+ "recommendation": "Hold for manual review. Model inference failed safely (HTTPStatusError); no approval inferred.",
+ "model_advice": {
+  "mode": "live",
+  "code_route": "reuse_review",
+  "final_route": "manual_review",
+  "route_locked_by_code": false,
+  "advice": null
+ }
+}
+[callmeter] gemini http calls=1 http_200=0 -> $SCRATCH/a2/meter/probe.json
+=== STOPPED after live probe: Gemini returned HTTP 503 UNAVAILABLE for models/gemini-3.5-flash ("currently experiencing high demand"). No retry, no further model substitution. Public evals and live comparison NOT run.
+=== mock API (pid 855) shut down 2026-10-07T14:48:25Z; /health unreachable

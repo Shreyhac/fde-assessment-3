@@ -1,21 +1,12 @@
-# FDE3 live validation: stopped at the live probe
+# FDE3 private live validation: index
 
-The package was decoded from `source-package.b64`. Its SHA256 matched the required value
-(38ced1d9628af77fbd5784baf05f4ac35a1284f2d4b7611d9a96ef146179bf65), and it was unpacked to `AI_Procurement_Copilot/`.
-Only `src/model.py` and `src/solution.py` were changed (see `live_mode.diff`):
+The source was decoded from `source-package.b64` (SHA256 matched 38ced1d9628af77fbd5784baf05f4ac35a1284f2d4b7611d9a96ef146179bf65)
+and unpacked to `AI_Procurement_Copilot/`. `live_mode.diff` holds the only code change: the network-secret live gate.
 
-- `solution.py`: the live gate now accepts a local `GEMINI_API_KEY` or `GEMINI_NETWORK_SECRET=1`.
-- `model.py`: when there is no local key and `GEMINI_NETWORK_SECRET=1`, the `x-goog-api-key` header is left
-  out so the egress proxy adds it. Local-key behaviour is unchanged.
+| Attempt | Model | Probe result | Folder |
+|---|---|---|---|
+| 1 | gemini-2.5-flash | HTTP 404 NOT_FOUND (model not available to new users) | `attempt1_gemini-2.5-flash_404/` |
+| 2 | gemini-3.5-flash (chosen from models.list) | HTTP 503 UNAVAILABLE (high demand) | `attempt2_gemini-3.5-flash_503/` |
 
-| Step | Result |
-|---|---|
-| pytest, offline (`COPILOT_MODE=offline`, network-secret unset) | 40 passed |
-| verify_setup.py preflight | PASSED |
-| Mock vendor API on 127.0.0.1:8001 | healthy, then shut down |
-| Live probe: REQ-1001, single, gemini-2.5-flash | **HTTP 404 NOT_FOUND**: "This model models/gemini-2.5-flash is no longer available to new users." |
-| Public evals (single/staged), live comparison | **Not run**: stopped on the model error. No retries and no model swap. |
-
-Gemini HTTP calls made: 1 (0 successful). The proxy authenticated the request; no local key header was sent.
-`live_probe_calls.json` records the status, error and model path for that call, without headers or body.
-`AI_Procurement_Copilot/evals/results_*.csv` and `evals/offline/` are the package's original files, not output from this session.
+Neither attempt produced valid model advice. Public live evals and the live comparison were not run.
+To verify attempt 2's archive: `base64 -d live.zip.b64 > live.zip && sha256sum -c live.zip.sha256`.
