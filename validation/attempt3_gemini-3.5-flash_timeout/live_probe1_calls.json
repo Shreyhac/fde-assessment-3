@@ -1,0 +1,15 @@
+{
+ "http_calls": 1,
+ "http_200": 0,
+ "aborted": true,
+ "calls": [
+  {
+   "n": 1,
+   "url_path": "/v1beta/models/gemini-3.5-flash:generateContent",
+   "local_key_header_sent": false,
+   "ms": 25667.4,
+   "exception": "ReadTimeout: The read operation timed out",
+   "abort": "network/transport ReadTimeout"
+  }
+ ]
+}

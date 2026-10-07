@@ -1,0 +1,16 @@
+=== ATTEMPT 3 (post-cooldown) 2026-10-07T15:06:32Z. Budget: at most 2 probes (3.5-flash; 3.6-flash only if 503). Guarded meter aborts on first error.
+=== source changes vs package: src/model.py + src/solution.py only (validation/live_mode.diff); .env.example default MODEL_NAME=gemini-2.5-flash untouched; override per command only
+=== pytest offline
+40 passed in 11.67s
+=== preflight
+[ OK ] Python 3.13.16
+[ OK ] Required starter packages import successfully
+[ OK ] Dataset integrity checks passed (10 requests, 13 vendors)
+[ OK ] Output contract + 6 public evaluation cases are valid
+[ OK ] Mock vendor-risk API checks passed
+PRE-FLIGHT PASSED
+=== mock API pid=237 health={"status":"ok"}
+=== PROBE 1/2: REQ-1001 single, MODEL_NAME=gemini-3.5-flash (COPILOT_MODE=live GEMINI_NETWORK_SECRET=1 GEMINI_API_KEY set: no)
+[callmeter] gemini http calls=1 http_200=0 -> probe1_gemini-3.5-flash.json
+[callmeter] ABORT: network/transport ReadTimeout -> stopping all inference (no retry)
+probe1 exit=3
