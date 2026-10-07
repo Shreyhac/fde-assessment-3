@@ -1,0 +1,33 @@
+{
+  "mode": "offline",
+  "semantic_ai_evaluation_complete": false,
+  "manual_semantic_review_required": true,
+  "results": {
+    "single": {
+      "runs": 30,
+      "correctness_minimum": 30,
+      "grounded_source_refs": 30,
+      "rule_following": 30,
+      "route_matches": 30,
+      "code_locked_routes": 21,
+      "human_escalation": 30,
+      "median_ms": 16.72,
+      "p95_ms": 23.72,
+      "total_llm_calls": 0,
+      "total_tool_calls": 150
+    },
+    "staged": {
+      "runs": 30,
+      "correctness_minimum": 30,
+      "grounded_source_refs": 30,
+      "rule_following": 30,
+      "route_matches": 30,
+      "code_locked_routes": 21,
+      "human_escalation": 30,
+      "median_ms": 13.795,
+      "p95_ms": 19.68,
+      "total_llm_calls": 0,
+      "total_tool_calls": 150
+    }
+  }
+}

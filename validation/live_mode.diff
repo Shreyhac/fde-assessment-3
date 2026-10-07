@@ -1,0 +1,25 @@
+--- a/src/model.py
++++ b/src/model.py
+@@ -33,7 +33,9 @@
+             'contents': [{'role': 'user', 'parts': [{'text': json.dumps(pack, default=str)}]}],
+             'generationConfig': {'temperature': 0, 'maxOutputTokens': 1024,
+                                  'responseMimeType': 'application/json', 'responseSchema': schema}}
+-    r = httpx.post(GEMINI_URL.format(model=model), headers={'x-goog-api-key': key}, json=body, timeout=25.0)
++    # With no local key in network-secret mode, omit the header so the egress proxy supplies it.
++    headers = {} if not key and os.getenv('GEMINI_NETWORK_SECRET') == '1' else {'x-goog-api-key': key}
++    r = httpx.post(GEMINI_URL.format(model=model), headers=headers, json=body, timeout=25.0)
+     r.raise_for_status()
+     parts = r.json()['candidates'][0]['content']['parts']
+     result = Advice.model_validate_json(''.join(p.get('text', '') for p in parts))
+--- a/src/solution.py
++++ b/src/solution.py
+@@ -36,7 +36,8 @@
+     reason = 'Offline rule preview. Semantic need/gap interpretation has not been model-verified.'
+     if mode == 'live':
+         try:
+-            if not os.getenv('GEMINI_API_KEY'): raise RuntimeError('No provider key')
++            # Local key, or a network-injected key (proxy adds the header; key never enters env/files).
++            if not (os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_NETWORK_SECRET') == '1'): raise RuntimeError('No provider key')
+             calls += 1
+             advice = infer(model_pack, 'Procurement Agent' if architecture == 'single' else 'Procurement Analyst')
+             if architecture == 'staged':

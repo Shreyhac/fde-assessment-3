@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="560" viewBox="0 0 1050 560">
+<rect width="1050" height="560" fill="white"/>
+<style>text{font-family:Arial,sans-serif;fill:#251f21;font-size:17px}.title{font-size:26px;font-weight:600}.head{font-weight:600}.box{fill:#f4efec;stroke:#ddd} .chosen{fill:#e5f0ec;stroke:#73a89a}.arrow{stroke:#585254;stroke-width:2;fill:none;marker-end:url(#a)}</style>
+<defs><marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="#585254"/></marker></defs>
+<text x="30" y="42" class="title">Procurement Copilot: evidence, controls, human authority</text>
+<text x="30" y="70">Shreyansh Arora | 24bcs10252 | Draft | Synthetic course data</text>
+<text x="30" y="112" class="head">A. Single-agent baseline</text>
+<rect x="30" y="135" width="140" height="62" rx="8" class="box"/><text x="47" y="170">Request UI</text>
+<rect x="235" y="135" width="265" height="62" rx="8" class="chosen"/><text x="254" y="170">Procurement Agent (1 LLM)</text>
+<rect x="560" y="135" width="175" height="62" rx="8" class="box"/><text x="580" y="170">Code guardrails</text>
+<rect x="800" y="135" width="220" height="62" rx="8" class="box"/><text x="816" y="161">Decision + evidence</text><text x="816" y="183">Human review only</text>
+<path d="M170 166H235 M500 166H560 M735 166H800" class="arrow"/>
+<text x="30" y="245" class="head">B. Staged comparison</text>
+<rect x="30" y="266" width="140" height="75" rx="8" class="box"/><text x="47" y="308">Request UI</text>
+<rect x="210" y="266" width="240" height="75" rx="8" class="box"/><text x="225" y="297">Procurement Analyst</text><text x="225" y="320">Need + evidence pack</text>
+<rect x="500" y="266" width="270" height="75" rx="8" class="box"/><text x="515" y="297">Policy/Risk Reviewer</text><text x="515" y="320">Same pack, no tool re-fetch</text>
+<rect x="810" y="266" width="210" height="75" rx="8" class="box"/><text x="824" y="297">Code guardrails</text><text x="824" y="320">Then human review</text>
+<path d="M170 304H210 M450 304H500 M770 304H810" class="arrow"/>
+<rect x="30" y="385" width="990" height="108" rx="8" class="chosen"/>
+<text x="48" y="414" class="head">Shared read-only tools (cached within one request)</text>
+<text x="48" y="442">Budget + employee | Catalog | Vendor registry + API + history | Policy | Deterministic checks</text>
+<text x="48" y="470">Controls: USD thresholds, missing data, 365-day freshness, conflict, PII, cross-region, legal</text>
+<text x="30" y="526">Offline preview skips all model calls. Live A/B comparison and Claude audit are not yet measured.</text>
+</svg>

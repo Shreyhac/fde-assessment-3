@@ -1,0 +1,44 @@
+=== 2026-10-07T14:41:03Z source.zip sha256: 38ced1d9628af77fbd5784baf05f4ac35a1284f2d4b7611d9a96ef146179bf65
+=== pytest (offline: COPILOT_MODE=offline, GEMINI_NETWORK_SECRET unset)
+........................................                                 [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  $REPO/AI_Procurement_Copilot/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+40 passed, 1 warning in 2.36s
+pytest exit=0
+=== preflight
+FDE Assessment 3 - starter pack pre-flight
+
+[ OK ] Python 3.13.16
+[ OK ] Required starter packages import successfully
+[ OK ] Dataset integrity checks passed (10 requests, 13 vendors)
+[ OK ] Output contract + 6 public evaluation cases are valid
+$REPO/AI_Procurement_Copilot/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+[ OK ] Mock vendor-risk API checks passed
+
+PRE-FLIGHT PASSED
+Next: copy .env.example to .env, add your model credentials, then run: python run_local.py
+preflight exit=0
+=== live probe REQ-1001 single (COPILOT_MODE=live MODEL_NAME=gemini-2.5-flash GEMINI_NETWORK_SECRET=1, GEMINI_API_KEY set: no)
+{
+ "llm_calls": 1,
+ "risk_flags": [
+  "existing_tool_overlap",
+  "llm_unavailable_or_invalid"
+ ],
+ "recommendation": "Hold for manual review. Model inference failed safely (HTTPStatusError); no approval inferred.",
+ "model_advice": {
+  "mode": "live",
+  "code_route": "reuse_review",
+  "final_route": "manual_review",
+  "route_locked_by_code": false,
+  "advice": null
+ }
+}
+[callmeter] gemini http calls=1 http_200=0 -> $SCRATCH/meter/probe.json
+=== STOPPED after live probe: Gemini returned HTTP 404 NOT_FOUND for models/gemini-2.5-flash (model unavailable to this key/project). No retries, no model substitution. Public evals and live comparison NOT run.
+=== mock API (pid 547) shut down 2026-10-07T14:42:06Z; /health unreachable, nothing listening on :8001
