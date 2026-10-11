@@ -1,0 +1,10 @@
+--- /tmp/fde3tc/pre_fix/callmeter_anthropic.py	2026-10-08 17:17:51.815673361 +0000
++++ validation/anthropic_toolcalling/callmeter_anthropic.py	2026-10-08 17:18:00.635171768 +0000
+@@ -72,6 +72,7 @@
+         L['http_200'] += 1
+         try: rec['response_text'] = ''.join(p.get('text', '') for p in j['content'] if p.get('type') == 'text')[:6000]
+         except Exception: rec['response_text'] = None
++        rec['tool_uses'] = [{'name': b.get('name'), 'input': b.get('input')} for b in (j.get('content') or []) if b.get('type') == 'tool_use']
+         try: rec['finishReason'] = j.get('stop_reason')
+         except Exception: rec['finishReason'] = None
+         if rec['finishReason'] not in ('end_turn', 'tool_use'): abort(f'model output finishReason={rec["finishReason"]} (not retried)', rec)

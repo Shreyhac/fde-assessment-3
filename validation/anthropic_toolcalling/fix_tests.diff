@@ -1,0 +1,14 @@
+--- /tmp/fde3tc/pre_fix/test_agentic_tools.py	2026-10-08 17:18:47.909780108 +0000
++++ tests/test_agentic_tools.py	2026-10-08 17:18:43.499173301 +0000
+@@ -110,7 +110,10 @@
+     ])
+     with live_env(), patch('httpx.post', api), patch('src.tools.get_vendor_risk', return_value=APPROVED_VENDOR):
+         d = analyze_request(get_request('REQ-1010'), 'single')
+-    assert api.bodies[-1]['tool_choice'] == {'type': 'tool', 'name': 'submit_advice'}
++    # Forced tool_choice is rejected by the API while thinking is enabled; the last round asks in text.
++    assert 'tool_choice' not in api.bodies[-1]
++    last_user = [msg for msg in api.bodies[-1]['messages'] if msg['role'] == 'user'][-1]['content']
++    assert any(b.get('type') == 'text' and 'Final round' in b.get('text', '') for b in last_user)
+     assert 'llm_unavailable_or_invalid' not in d.risk_flags
+ 
+ 

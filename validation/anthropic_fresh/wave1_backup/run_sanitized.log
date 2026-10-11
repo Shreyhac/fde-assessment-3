@@ -1,0 +1,7 @@
+=== ANTHROPIC FRESH RUN start 2026-10-08T13:08:42Z: claude-sonnet-5-5, 72 decisions/108 stages, cap 6 / soft 5.50 (rates 2/10 USD per MTok), new calls stop 13:28Z; user-approved launch
+[ckpt] planned=72 saved=0 pending=72
+[ckpt] saved public|single|PUB-01|0 (7338 ms) total=1/72
+[callmeter] step=anthropic_fresh calls=2 http_200=2 cumulative: calls=2 est_usd=0.0255
+[callmeter] ABORT: llm_unavailable_or_invalid on REQ-1002/single -> stopping all inference (no retry)
+=== runner exit=3 2026-10-08T13:08:54Z
+=== mock API (pid 680) shut down 2026-10-08T13:09:15Z; exited: yes; health=''

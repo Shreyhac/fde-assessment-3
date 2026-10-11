@@ -1,0 +1,5 @@
+VERIFIED72 unique valid Anthropic decisions {('comparison', 'single'): 30, ('comparison', 'staged'): 30, ('public', 'staged'): 6, ('public', 'single'): 6} maxlens 656 241
+VERIFIED109 physical calls 432679 39554 USD 1.260898
+single 30 median 3401.45 p95 7147.13 calls 30 routecorrections 12
+staged 30 median 7682.02 p95 13523.52 calls 60 routecorrections 12
+Caveat semantic_ai_evaluation_complete False remains harness flag; manual review separately in REVIEW_wave2.md

@@ -1,0 +1,5 @@
+=== wave3 start 2026-10-08T17:16:44Z
+[ckpt] planned=72 saved=0 pending=72
+[callmeter] step=wave3 calls=2 http_200=2 cumulative: calls=2 est_usd=0.0205
+[callmeter] ABORT: llm_unavailable_or_invalid on REQ-1001/single -> stopping all inference (no retry)
+=== runner exit=3 2026-10-08T17:16:51Z

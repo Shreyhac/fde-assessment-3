@@ -1,0 +1,46 @@
+--- /tmp/fde3tc/pre_fix/model.py	2026-10-08 17:17:51.815646534 +0000
++++ src/model.py	2026-10-08 17:17:51.828707785 +0000
+@@ -56,10 +56,17 @@
+      'description': 'Read the authoritative procurement policy text, its version and evaluation reference date.',
+      'input_schema': {'type': 'object', 'properties': {}}},
+ ]
++TOOL_EVIDENCE_IDS = {'budget_lookup': 'budget', 'catalog_lookup': 'catalog', 'vendor_risk_lookup': 'vendor', 'policy_lookup': 'policy'}
++# The agent must cite evidence by these IDs only (code rejects anything it did not retrieve).
++AGENT_EVIDENCE_IDS = ['request'] + list(TOOL_EVIDENCE_IDS.values())
++SUBMIT_SCHEMA = {**ADVICE_SCHEMA, 'properties': {**ADVICE_SCHEMA['properties'], 'evidence_ids': {
++    'type': 'array', 'items': {'type': 'string', 'enum': AGENT_EVIDENCE_IDS},
++    'description': 'IDs of evidence you actually used: request (the request JSON), budget (budget_lookup), '
++                   'catalog (catalog_lookup), vendor (vendor_risk_lookup), policy (policy_lookup). '
++                   'Only cite tools you called.'}}}
+ SUBMIT_TOOL = {'name': 'submit_advice',
+                'description': 'Submit the final advisory exactly once, after reviewing the evidence you retrieved.',
+-               'input_schema': ADVICE_SCHEMA}
+-TOOL_EVIDENCE_IDS = {'budget_lookup': 'budget', 'catalog_lookup': 'catalog', 'vendor_risk_lookup': 'vendor', 'policy_lookup': 'policy'}
++               'input_schema': SUBMIT_SCHEMA}
+ 
+ AGENT_TASK = ('Assess this procurement request end to end. First retrieve the evidence you need with the tools, '
+               'then call submit_advice exactly once. Request JSON:\n')
+@@ -132,8 +139,7 @@
+                 'system': SYSTEM + '\nYour role: ' + role, 'messages': messages,
+                 'tools': RETRIEVAL_TOOLS + [SUBMIT_TOOL],
+                 'thinking': {'type': 'adaptive'}, 'output_config': {'effort': 'high'}}
+-        if round_number == max_rounds - 1:
+-            body['tool_choice'] = {'type': 'tool', 'name': 'submit_advice'}
++        # Forced tool_choice is not allowed with thinking enabled; the final round asks in text instead.
+         r = httpx.post(url, headers=headers, json=body, timeout=25.0)
+         r.raise_for_status()
+         api_calls += 1
+@@ -161,10 +167,12 @@
+                 output = execute_tool(name, use.get('input') or {})
+                 seen.add(TOOL_EVIDENCE_IDS[name])
+                 results.append({'type': 'tool_result', 'tool_use_id': use['id'],
+-                                'content': json.dumps(output, default=str)[:12000]})
++                                'content': json.dumps({'evidence_id': TOOL_EVIDENCE_IDS[name], 'result': output}, default=str)[:12000]})
+             except Exception as exc:
+                 results.append({'type': 'tool_result', 'tool_use_id': use['id'], 'is_error': True,
+                                 'content': 'Tool failed: ' + type(exc).__name__})
++        if round_number == max_rounds - 2:
++            results.append({'type': 'text', 'text': 'Final round: call submit_advice now, citing only evidence IDs you retrieved.'})
+         messages.append({'role': 'user', 'content': results})
+     if advice is None:
+         raise ValueError('Model never submitted advice')

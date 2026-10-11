@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="680" viewBox="0 0 1180 680">
+<rect width="1180" height="680" fill="white"/>
+<style>text{font-family:Arial,sans-serif;fill:#251f21;font-size:15px}.title{font-size:25px;font-weight:600}.head{font-weight:600}.box{fill:#f4efec;stroke:#ddd}.chosen{fill:#e5f0ec;stroke:#73a89a}.code{fill:#f7f3e4;stroke:#c9b45a}.arrow{stroke:#585254;stroke-width:2;fill:none;marker-end:url(#a)}.both{stroke:#585254;stroke-width:2;fill:none;marker-start:url(#b);marker-end:url(#a)}</style>
+<defs>
+<marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="#585254"/></marker>
+<marker id="b" markerWidth="7" markerHeight="7" refX="1" refY="3.5" orient="auto"><path d="M7 0L0 3.5L7 7" fill="#585254"/></marker>
+</defs>
+<text x="30" y="42" class="title">Procurement Copilot: model-driven evidence retrieval, code controls, human authority</text>
+<text x="30" y="68">Shreyansh Arora | 24bcs10252 | Live evaluation (Claude Sonnet 5.5) | Synthetic course data</text>
+
+<text x="30" y="112" class="head">A. Single-agent baseline (recommended)</text>
+<rect x="30" y="132" width="130" height="62" rx="8" class="box"/><text x="48" y="168">Request UI</text>
+<rect x="215" y="132" width="250" height="62" rx="8" class="chosen"/><text x="232" y="157">Procurement Agent (LLM)</text><text x="232" y="179">calls the retrieval tools itself</text>
+<rect x="520" y="132" width="300" height="62" rx="8" class="code"/><text x="536" y="157">Code: completes skipped tools,</text><text x="536" y="179">then deterministic controls</text>
+<rect x="855" y="132" width="160" height="62" rx="8" class="code"/><text x="871" y="157">Route lock</text><text x="871" y="179">(sensitive routes)</text>
+<rect x="1060" y="132" width="105" height="62" rx="8" class="box"/><text x="1069" y="157">Decision +</text><text x="1069" y="179">human review</text>
+<path d="M160 163H215 M465 163H520 M820 163H855 M1015 163H1060" class="arrow"/>
+
+<rect x="520" y="214" width="645" height="116" rx="8" class="chosen"/>
+<text x="536" y="236" class="head">Shared read-only tools (results cached within one request)</text>
+<text x="536" y="258">budget_lookup | catalog_lookup | vendor_risk_lookup | policy_lookup</text>
+<text x="536" y="280">vendor_risk_lookup = registry + mock API + purchase history</text>
+<text x="536" y="302">Deterministic policy check (always runs in code): USD thresholds, missing data,</text>
+<text x="536" y="322">365-day freshness, conflicts, PII, cross-region, legal, injection, budget record</text>
+<path d="M340 194V250H520" class="both"/>
+<path d="M290 376V352H508V318" class="both"/>
+
+<text x="30" y="356" class="head">B. Staged comparison</text>
+<rect x="30" y="376" width="110" height="62" rx="8" class="box"/><text x="46" y="412">Request UI</text>
+<rect x="175" y="376" width="230" height="62" rx="8" class="box"/><text x="190" y="401">Procurement Analyst (LLM)</text><text x="190" y="423">calls the retrieval tools itself</text>
+<rect x="430" y="376" width="250" height="62" rx="8" class="code"/><text x="444" y="401">Code: completes skipped tools,</text><text x="444" y="423">then deterministic controls</text>
+<rect x="705" y="376" width="210" height="62" rx="8" class="box"/><text x="718" y="396">Policy/Risk Reviewer (LLM)</text><text x="718" y="416">reads advice + controls,</text><text x="718" y="434">no tool re-fetch</text>
+<rect x="940" y="376" width="110" height="62" rx="8" class="code"/><text x="953" y="401">Route lock</text><text x="953" y="423">(sensitive)</text>
+<rect x="1075" y="376" width="105" height="62" rx="8" class="box"/><text x="1083" y="401">Decision +</text><text x="1083" y="423">human review</text>
+<path d="M140 407H175 M405 407H430 M680 407H705 M915 407H940 M1050 407H1075" class="arrow"/>
+
+<text x="30" y="520">Live mode: the model chooses and calls retrieval tools, then submits structured advice; code re-runs any tool it skipped, applies the deterministic</text>
+<text x="30" y="542">controls, and locks clarify/manual-review routes. In B the reviewer reads the analyst's advice and the computed controls. Offline preview skips</text>
+<text x="30" y="564">all model calls. No write, purchasing or approval tool exists anywhere.</text>
+</svg>

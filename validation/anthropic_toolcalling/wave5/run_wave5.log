@@ -1,0 +1,37 @@
+=== wave5 held-out start 2026-10-08T19:00:58Z
+[ckpt] perturbation|single|HO-PREC|0 PASS clarify
+[ckpt] perturbation|single|HO-A1|0 PASS manual_review
+[ckpt] perturbation|single|HO-A2|0 PASS manual_review
+[ckpt] perturbation|single|HO-A3|0 PASS manual_review
+[ckpt] perturbation|single|HO-A4|0 PASS manual_review
+[ckpt] perturbation|single|HO-A5|0 PASS manual_review
+[ckpt] perturbation|single|HO-A6|0 PASS manual_review
+[ckpt] perturbation|single|HO-A7|0 PASS manual_review
+[ckpt] perturbation|single|HO-B1|0 PASS approval_review
+[ckpt] perturbation|single|HO-B2|0 PASS approval_review
+[ckpt] perturbation|single|HO-B3|0 PASS approval_review
+[ckpt] perturbation|single|HO-B4|0 PASS approval_review
+[ckpt] perturbation|single|HO-B5|0 PASS approval_review
+[ckpt] perturbation|single|HO-VENDOR-INJ|0 PASS manual_review
+[ckpt] perturbation|staged|HO-PREC|0 PASS clarify
+[ckpt] perturbation|staged|HO-A1|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A2|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A3|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A4|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A5|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A6|0 PASS manual_review
+[ckpt] perturbation|staged|HO-A7|0 PASS manual_review
+[ckpt] perturbation|staged|HO-B1|0 PASS approval_review
+[ckpt] perturbation|staged|HO-B2|0 FAIL reuse_review
+[ckpt] FAIL DETAIL {"route_match": false, "flags_present": true, "flags_absent": true, "no_model_failure": true} ['existing_tool_overlap']
+[ckpt] perturbation|staged|HO-B3|0 FAIL reuse_review
+[ckpt] FAIL DETAIL {"route_match": false, "flags_present": true, "flags_absent": true, "no_model_failure": true} ['existing_tool_overlap']
+[ckpt] perturbation|staged|HO-B4|0 FAIL clarify
+[ckpt] FAIL DETAIL {"route_match": false, "flags_present": true, "flags_absent": true, "no_model_failure": true} ['existing_tool_overlap']
+[ckpt] perturbation|staged|HO-B5|0 FAIL reuse_review
+[ckpt] FAIL DETAIL {"route_match": false, "flags_present": true, "flags_absent": true, "no_model_failure": true} ['existing_tool_overlap']
+[ckpt] perturbation|staged|HO-VENDOR-INJ|0 PASS manual_review
+[ckpt] heldout_cases.json: 24/28 PASSED
+failed cases: perturbation|staged|HO-B2|0, perturbation|staged|HO-B3|0, perturbation|staged|HO-B4|0, perturbation|staged|HO-B5|0
+[callmeter] step=wave5 calls=70 http_200=70 cumulative: calls=70 est_usd=0.8499
+=== runner exit=1 2026-10-08T19:05:43Z

@@ -1,0 +1,213 @@
+diff --git a/AI_Procurement_Copilot/src/model.py b/AI_Procurement_Copilot/src/model.py
+index d1ebe8b..841a4b9 100644
+--- a/AI_Procurement_Copilot/src/model.py
++++ b/AI_Procurement_Copilot/src/model.py
+@@ -17,11 +17,13 @@ Interpret the business need and whether catalog matches solve it; surface credib
+ Return an object with route (clarify, reuse_review, manual_review, approval_review), reason, evidence_ids, gap_reason.
+ No extra prose. Missing material data -> clarify. Stale/conflicting/unavailable evidence -> manual_review.
+ Existing match -> reuse_review unless a credible gap justifies review of new purchase. Otherwise approval_review.
+-Every route still needs a human. You cannot alter financial checks or approval roles.'''
++Every route still needs a human. You cannot alter financial checks or approval roles.
++Length limits (output longer than the absolute limits is rejected): keep reason concise, aim for 500 characters or fewer,
++absolute maximum 700 characters; keep gap_reason to 250 characters or fewer, absolute maximum 400 characters, empty if no gap.'''
+ 
+ GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+ 
+-def infer(pack, role):
++def infer_gemini(pack, role):
+     import httpx
+     key = os.getenv('GEMINI_API_KEY', '')
+     model = os.getenv('MODEL_NAME', 'gemini-2.5-flash')
+@@ -31,14 +33,46 @@ def infer(pack, role):
+         'gap_reason': {'type': 'STRING'}}, 'required': ['route', 'reason', 'evidence_ids']}
+     body = {'systemInstruction': {'parts': [{'text': SYSTEM + '\nYour role: ' + role}]},
+             'contents': [{'role': 'user', 'parts': [{'text': json.dumps(pack, default=str)}]}],
+-            'generationConfig': {'temperature': 0, 'maxOutputTokens': 1024,
++            'generationConfig': {'temperature': 0, 'maxOutputTokens': 4096,
+                                  'responseMimeType': 'application/json', 'responseSchema': schema}}
+-    # With no local key in network-secret mode, omit the header so the egress proxy supplies it.
+-    headers = {} if not key and os.getenv('GEMINI_NETWORK_SECRET') == '1' else {'x-goog-api-key': key}
+-    r = httpx.post(GEMINI_URL.format(model=model), headers=headers, json=body, timeout=25.0)
++    r = httpx.post(GEMINI_URL.format(model=model), headers={'x-goog-api-key': key}, json=body, timeout=25.0)
+     r.raise_for_status()
+     parts = r.json()['candidates'][0]['content']['parts']
+     result = Advice.model_validate_json(''.join(p.get('text', '') for p in parts))
+     known = {e['id'] for e in pack['evidence']}
+     if not set(result.evidence_ids).issubset(known): raise ValueError('Ungrounded evidence IDs')
+     return result
++
++
++def provider_key_name():
++    provider = os.getenv('MODEL_PROVIDER', 'anthropic').lower()
++    if provider not in ('gemini', 'anthropic'): raise ValueError('Unknown model provider')
++    return 'FDE3_ANTHROPIC_API_KEY' if provider == 'anthropic' else 'GEMINI_API_KEY'
++
++def infer_anthropic(pack, role):
++    import httpx
++    key = os.getenv('FDE3_ANTHROPIC_API_KEY', '')
++    if not key: raise RuntimeError('No Anthropic provider key')
++    schema = {'type': 'object', 'properties': {
++        'route': {'type': 'string', 'enum': ['clarify', 'reuse_review', 'manual_review', 'approval_review']},
++        'reason': {'type': 'string', 'description': 'Concise justification citing supplied evidence. Aim for 500 characters or fewer; absolute maximum 700 characters.'},
++        'evidence_ids': {'type': 'array', 'items': {'type': 'string'}},
++        'gap_reason': {'type': 'string', 'description': 'Credible gap or missing item, or empty string if none. Aim for 250 characters or fewer; absolute maximum 400 characters.'}},
++        'required': ['route', 'reason', 'evidence_ids', 'gap_reason'], 'additionalProperties': False}
++    body = {'model': os.getenv('MODEL_NAME', 'claude-sonnet-5-5'), 'max_tokens': 4096,
++            'system': SYSTEM + '\nYour role: ' + role,
++            'messages': [{'role': 'user', 'content': json.dumps(pack, default=str)}],
++            'thinking': {'type': 'adaptive'},
++            'output_config': {'effort': 'high', 'format': {'type': 'json_schema', 'schema': schema}}}
++    r = httpx.post('https://api.anthropic.com/v1/messages',
++                   headers={'x-api-key': key, 'anthropic-version': '2023-06-01'}, json=body, timeout=25.0)
++    r.raise_for_status()
++    response = r.json()
++    if response.get('stop_reason') != 'end_turn': raise ValueError('Incomplete or refused model output')
++    result = Advice.model_validate_json(''.join(p.get('text', '') for p in response['content'] if p.get('type') == 'text'))
++    known = {e['id'] for e in pack['evidence']}
++    if not set(result.evidence_ids).issubset(known): raise ValueError('Ungrounded evidence IDs')
++    return result
++
++def infer(pack, role):
++    return infer_anthropic(pack, role) if provider_key_name() == 'FDE3_ANTHROPIC_API_KEY' else infer_gemini(pack, role)
+diff --git a/AI_Procurement_Copilot/src/solution.py b/AI_Procurement_Copilot/src/solution.py
+index 5dfbced..1ebba77 100644
+--- a/AI_Procurement_Copilot/src/solution.py
++++ b/AI_Procurement_Copilot/src/solution.py
+@@ -4,7 +4,7 @@ from dotenv import load_dotenv
+ from src.contracts import Architecture, ProcurementDecision, EvidenceItem, RunTelemetry
+ from src import data_access as db
+ from src.tools import Tools
+-from src.model import infer
++from src.model import infer, provider_key_name
+ load_dotenv(db.ROOT / '.env', override=False)
+ 
+ 
+@@ -36,8 +36,7 @@ def analyze_request(req: dict, architecture: Architecture = 'single') -> Procure
+     reason = 'Offline rule preview. Semantic need/gap interpretation has not been model-verified.'
+     if mode == 'live':
+         try:
+-            # Local key, or a network-injected key (proxy adds the header; key never enters env/files).
+-            if not (os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_NETWORK_SECRET') == '1'): raise RuntimeError('No provider key')
++            if not os.getenv(provider_key_name()): raise RuntimeError('No provider key')
+             calls += 1
+             advice = infer(model_pack, 'Procurement Agent' if architecture == 'single' else 'Procurement Analyst')
+             if architecture == 'staged':
+@@ -56,7 +55,7 @@ def analyze_request(req: dict, architecture: Architecture = 'single') -> Procure
+             route = 'manual_review'
+     elif mode != 'offline': raise ValueError('COPILOT_MODE must be offline or live')
+     import json
+-    evidence.append({'id':'model_advice','source':'model_advice','finding':{'mode':mode,'code_route':code_route,'final_route':route,'route_locked_by_code':code_route in ('clarify','manual_review'), 'advice':advice.model_dump() if advice else None},'reference':'src/model.py + src/solution.py'})
++    evidence.append({'id':'model_advice','source':'model_advice','finding':{'mode':mode,'provider':os.getenv('MODEL_PROVIDER','anthropic'),'model':os.getenv('MODEL_NAME','claude-sonnet-5-5' if os.getenv('MODEL_PROVIDER','anthropic')=='anthropic' else 'gemini-2.5-flash'),'code_route':code_route,'final_route':route,'route_locked_by_code':code_route in ('clarify','manual_review'), 'advice':advice.model_dump() if advice else None},'reference':'src/model.py + src/solution.py'})
+     label = {'clarify':'Request clarification', 'manual_review':'Hold for manual review',
+              'reuse_review':'Review existing tool before new purchase', 'approval_review':'Route for human approval'}[route]
+     next_step = ('Ask requester to supply: ' + ', '.join(controls['requester_missing'] or missing) + '. Then rerun checks.' if route == 'clarify' else
+diff --git a/AI_Procurement_Copilot/tests/conftest.py b/AI_Procurement_Copilot/tests/conftest.py
+index f3ba165..1184dda 100644
+--- a/AI_Procurement_Copilot/tests/conftest.py
++++ b/AI_Procurement_Copilot/tests/conftest.py
+@@ -3,3 +3,4 @@ import pytest
+ @pytest.fixture(autouse=True)
+ def offline_default(monkeypatch):
+     monkeypatch.setenv('COPILOT_MODE','offline')
++    monkeypatch.setenv('MODEL_PROVIDER','gemini')
+diff --git a/AI_Procurement_Copilot/tests/test_anthropic.py b/AI_Procurement_Copilot/tests/test_anthropic.py
+new file mode 100644
+index 0000000..5c90789
+--- /dev/null
++++ b/AI_Procurement_Copilot/tests/test_anthropic.py
+@@ -0,0 +1,35 @@
++import json, os
++from unittest.mock import patch, MagicMock
++import pytest, httpx
++from src.model import infer
++PACK={'evidence':[{'id':'policy'}]}
++def response(stop='end_turn',ids=None):
++    r=MagicMock();r.json.return_value={'stop_reason':stop,'content':[{'type':'thinking','thinking':''},{'type':'text','text':json.dumps({'route':'manual_review','reason':'review','evidence_ids':ids or ['policy'],'gap_reason':''})}]};return r
++@pytest.mark.parametrize('stop',['max_tokens','refusal','tool_use',None])
++def test_stops(stop):
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic','FDE3_ANTHROPIC_API_KEY':'fake'}),patch('httpx.post',return_value=response(stop)):
++        with pytest.raises(ValueError):infer(PACK,'review')
++def test_request_and_ids():
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic','FDE3_ANTHROPIC_API_KEY':'fake'},clear=True),patch('httpx.post',return_value=response()) as post:
++        assert infer(PACK,'review').route=='manual_review'
++        args=post.call_args;assert args.args[0]=='https://api.anthropic.com/v1/messages'
++        b=args.kwargs['json'];assert b['model']=='claude-sonnet-5-5' and b['max_tokens']==4096
++        assert b['output_config']['format']['type']=='json_schema' and 'temperature' not in b
++        post.return_value=response(ids=['unknown'])
++        with pytest.raises(ValueError):infer(PACK,'review')
++def test_missing_key():
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic'},clear=True),patch('httpx.post') as post:
++        with pytest.raises(RuntimeError):infer(PACK,'review')
++        post.assert_not_called()
++@pytest.mark.parametrize('status',[401,429,500,503])
++def test_http(status):
++    req=httpx.Request('POST','https://api.anthropic.com/v1/messages');r=httpx.Response(status,request=req)
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic','FDE3_ANTHROPIC_API_KEY':'fake'}),patch('httpx.post',return_value=r):
++        with pytest.raises(httpx.HTTPStatusError):infer(PACK,'review')
++def test_timeout():
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic','FDE3_ANTHROPIC_API_KEY':'fake'}),patch('httpx.post',side_effect=httpx.ReadTimeout('timeout')):
++        with pytest.raises(httpx.ReadTimeout):infer(PACK,'review')
++def test_invalid_json():
++    r=response();r.json.return_value['content'][1]['text']='not json'
++    with patch.dict(os.environ,{'MODEL_PROVIDER':'anthropic','FDE3_ANTHROPIC_API_KEY':'fake'}),patch('httpx.post',return_value=r):
++        with pytest.raises(ValueError):infer(PACK,'review')
+diff --git a/AI_Procurement_Copilot/tests/test_anthropic_length_contract.py b/AI_Procurement_Copilot/tests/test_anthropic_length_contract.py
+new file mode 100644
+index 0000000..bd4e074
+--- /dev/null
++++ b/AI_Procurement_Copilot/tests/test_anthropic_length_contract.py
+@@ -0,0 +1,54 @@
++"""Regression: Anthropic output-length contract (descriptions + prompt; no unsupported raw-schema constraints; overlength still rejected)."""
++import json
++import pytest
++from pydantic import ValidationError
++import src.model as m
++
++class _Resp:
++    def __init__(self, payload): self._p = payload
++    def raise_for_status(self): pass
++    def json(self): return self._p
++
++def _call(monkeypatch, reason, gap=''):
++    seen = {}
++    def fake_post(url, headers=None, json=None, timeout=None):
++        seen['body'] = json
++        text = __import__('json').dumps({'route': 'manual_review', 'reason': reason, 'evidence_ids': ['policy'], 'gap_reason': gap})
++        return _Resp({'stop_reason': 'end_turn', 'content': [{'type': 'text', 'text': text}]})
++    monkeypatch.setenv('MODEL_PROVIDER', 'anthropic'); monkeypatch.setenv('FDE3_ANTHROPIC_API_KEY', 'dummy-test-value')
++    monkeypatch.setattr('httpx.post', fake_post)
++    return seen, (lambda: m.infer_anthropic({'evidence': [{'id': 'policy'}]}, 'test'))
++
++def _walk(node):
++    if isinstance(node, dict):
++        yield node
++        for v in node.values(): yield from _walk(v)
++    elif isinstance(node, list):
++        for v in node: yield from _walk(v)
++
++def test_schema_descriptions_state_limits_and_no_unsupported_constraints(monkeypatch):
++    seen, run = _call(monkeypatch, 'ok')
++    run()
++    schema = seen['body']['output_config']['format']['schema']
++    props = schema['properties']
++    assert '700' in props['reason']['description'] and '500' in props['reason']['description']
++    assert '400' in props['gap_reason']['description'] and '250' in props['gap_reason']['description']
++    for node in _walk(schema):
++        assert 'maxLength' not in node and 'minLength' not in node
++
++def test_system_prompt_states_length_limits():
++    for token in ('500', '700', '250', '400', 'reason', 'gap_reason'):
++        assert token in m.SYSTEM
++
++def test_advice_limits_not_relaxed():
++    assert any(getattr(x, 'max_length', None) == 700 for x in m.Advice.model_fields['reason'].metadata)
++    assert any(getattr(x, 'max_length', None) == 400 for x in m.Advice.model_fields['gap_reason'].metadata)
++
++def test_limit_lengths_accepted(monkeypatch):
++    _, run = _call(monkeypatch, 'r' * 700, 'g' * 400)
++    a = run(); assert len(a.reason) == 700 and len(a.gap_reason) == 400   # not truncated
++
++@pytest.mark.parametrize('reason,gap', [('r' * 701, ''), ('r' * 1040, ''), ('ok', 'g' * 401)])
++def test_overlength_rejected_not_truncated(monkeypatch, reason, gap):
++    _, run = _call(monkeypatch, reason, gap)
++    with pytest.raises(ValidationError): run()

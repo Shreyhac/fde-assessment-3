@@ -1,0 +1,5 @@
+CASE 1 WARNINGS ['Offline rule preview. No LLM calls are made in this UI run. Completed live results are in validation/anthropic_fresh/.'] ERRORS ['No purchase or approval has been executed.']
+CASE 4 WARNINGS ['Offline rule preview. No LLM calls are made in this UI run. Completed live results are in validation/anthropic_fresh/.'] ERRORS ['No purchase or approval has been executed.']
+CASE 5 WARNINGS ['Offline rule preview. No LLM calls are made in this UI run. Completed live results are in validation/anthropic_fresh/.', 'Missing: annual cost; user/license count; data access level (unknown or unrecognized)'] ERRORS ['No purchase or approval has been executed.']
+CASE 8 WARNINGS ['Offline rule preview. No LLM calls are made in this UI run. Completed live results are in validation/anthropic_fresh/.', 'Missing: current vendor-risk API evidence; data residency unverified'] ERRORS ['No purchase or approval has been executed.']
+STALE_RESULT_CHECK PASS

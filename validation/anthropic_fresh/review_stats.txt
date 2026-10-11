@@ -1,0 +1,28 @@
+decisions 72 unique keys 72 sources {'anthropic_live': 72}
+llm_unavailable flags [] | missing advice []
+max reason chars 656 max gap chars 241
+case|req|arch -> code / model routes(counter) / final / locked / pass n/N / route_match / injection flag / llm_calls
+EXT-07 REQ-1004 single | manual_review | {'reuse_review': 3} | {'manual_review': 3} | locked True | pass 3 / 3 | rmatch 3 | inj False | calls 1
+EXT-07 REQ-1004 staged | manual_review | {'reuse_review': 3} | {'manual_review': 3} | locked True | pass 3 / 3 | rmatch 3 | inj False | calls 2
+EXT-08 REQ-1007 single | manual_review | {'manual_review': 3} | {'manual_review': 3} | locked True | pass 3 / 3 | rmatch 3 | inj False | calls 1
+EXT-08 REQ-1007 staged | manual_review | {'manual_review': 3} | {'manual_review': 3} | locked True | pass 3 / 3 | rmatch 3 | inj False | calls 2
+EXT-09 REQ-1008 single | reuse_review | {'reuse_review': 3} | {'reuse_review': 3} | locked False | pass 3 / 3 | rmatch 3 | inj False | calls 1
+EXT-09 REQ-1008 staged | reuse_review | {'reuse_review': 3} | {'reuse_review': 3} | locked False | pass 3 / 3 | rmatch 3 | inj False | calls 2
+EXT-10 REQ-1010 single | approval_review | {'approval_review': 3} | {'approval_review': 3} | locked False | pass 3 / 3 | rmatch 3 | inj False | calls 1
+EXT-10 REQ-1010 staged | approval_review | {'approval_review': 3} | {'approval_review': 3} | locked False | pass 3 / 3 | rmatch 3 | inj False | calls 2
+PUB-01 REQ-1001 single | reuse_review | {'reuse_review': 4} | {'reuse_review': 4} | locked False | pass 4 / 4 | rmatch 3 | inj False | calls 1
+PUB-01 REQ-1001 staged | reuse_review | {'reuse_review': 4} | {'reuse_review': 4} | locked False | pass 4 / 4 | rmatch 3 | inj False | calls 2
+PUB-02 REQ-1002 single | manual_review | {'approval_review': 3, 'reuse_review': 1} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 1
+PUB-02 REQ-1002 staged | manual_review | {'reuse_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 2
+PUB-03 REQ-1003 single | manual_review | {'reuse_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 1
+PUB-03 REQ-1003 staged | manual_review | {'reuse_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 2
+PUB-04 REQ-1005 single | manual_review | {'approval_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 1
+PUB-04 REQ-1005 staged | manual_review | {'approval_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 2
+PUB-05 REQ-1006 single | clarify | {'clarify': 4} | {'clarify': 4} | locked True | pass 4 / 4 | rmatch 3 | inj True | calls 1
+PUB-05 REQ-1006 staged | clarify | {'clarify': 4} | {'clarify': 4} | locked True | pass 4 / 4 | rmatch 3 | inj True | calls 2
+PUB-06 REQ-1009 single | manual_review | {'manual_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 1
+PUB-06 REQ-1009 staged | manual_review | {'manual_review': 4} | {'manual_review': 4} | locked True | pass 4 / 4 | rmatch 3 | inj False | calls 2
+SUMMARY {"single": {"done": 6, "planned": 6, "passed": 6}, "staged": {"done": 6, "planned": 6, "passed": 6}} {"single": {"runs": 30, "planned": 30, "complete": true, "correctness_minimum": 30, "grounded_source_refs": 30, "rule_following": 30, "route_matches": 30, "code_locked_routes": 21, "model_route_differs_from_final": 12, "human_escalation": 30, "median_ms": 3401.45, "p95_ms": 7147.13, "total_llm_calls": 30, "total_tool_calls": 150}, "staged": {"runs": 30, "planned": 30, "complete": true, "correctness_minimum": 30, "grounded_source_refs": 30, "rule_following": 30, "route_matches": 30, "code_locked_routes": 21, "model_route_differs_from_final": 12, "human_escalation": 30, "median_ms": 7682.02, "p95_ms": 13523.52, "total_llm_calls": 60, "total_tool_calls": 150}}
+PUB-02 call: status 200 stop end_turn ms 6190.7 usage {'input_tokens': 3977, 'cache_creation_input_tokens': 0, 'cache_read_input_tokens': 0, 'cache_creation': {'ephemeral_5m_input_tokens': 0, 'ephemeral_1h_input_tokens': 0}, 'output_tokens': 569, 'output_tokens_details': {'thinking_tokens': 302}, 'service_tier': 'standard', 'inference_geo': 'global'} est 0.013644
+wave2 calls 107 status {200: 107} stops {'end_turn': 107} attempts>1 0 median ms 3397.7 max ms 8477.8
+LEDGER {"est_usd": 1.2608980000000005, "calls": 109, "http_200": 109, "tokens": {"input_tokens": 432679, "output_tokens": 39554}, "logical": 109}

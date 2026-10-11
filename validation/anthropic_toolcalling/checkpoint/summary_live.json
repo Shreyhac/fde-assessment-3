@@ -1,0 +1,54 @@
+{
+ "mode": "live",
+ "harness": "attempt-11 resumed external checkpoint harness (original scripts did not finish live)",
+ "latency_note": "latency includes any 503 retry waits",
+ "decisions_saved": 72,
+ "planned": 72,
+ "public": {
+  "single": {
+   "done": 6,
+   "planned": 6,
+   "passed": 6
+  },
+  "staged": {
+   "done": 6,
+   "planned": 6,
+   "passed": 6
+  }
+ },
+ "comparison": {
+  "single": {
+   "runs": 30,
+   "planned": 30,
+   "complete": true,
+   "correctness_minimum": 30,
+   "grounded_source_refs": 30,
+   "rule_following": 30,
+   "route_matches": 30,
+   "code_locked_routes": 21,
+   "model_route_differs_from_final": 3,
+   "human_escalation": 30,
+   "median_ms": 4923.12,
+   "p95_ms": 6376.53,
+   "total_llm_calls": 60,
+   "total_tool_calls": 150
+  },
+  "staged": {
+   "runs": 30,
+   "planned": 30,
+   "complete": true,
+   "correctness_minimum": 30,
+   "grounded_source_refs": 30,
+   "rule_following": 30,
+   "route_matches": 30,
+   "code_locked_routes": 21,
+   "model_route_differs_from_final": 3,
+   "human_escalation": 30,
+   "median_ms": 8626.985,
+   "p95_ms": 11203.5,
+   "total_llm_calls": 90,
+   "total_tool_calls": 150
+  }
+ },
+ "semantic_ai_evaluation_complete": false
+}

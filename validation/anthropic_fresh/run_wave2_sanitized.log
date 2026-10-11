@@ -1,0 +1,77 @@
+=== WAVE 2 resume 2026-10-08T13:14:54Z: length-contract fix applied (descriptions + SYSTEM limits), 59 offline tests pass; ledger cumulative; new calls stop 15:00Z
+[ckpt] planned=72 saved=1 pending=71
+[ckpt] saved public|single|PUB-02|0 (6212 ms) total=2/72
+[ckpt] saved public|single|PUB-03|0 (2935 ms) total=3/72
+[ckpt] saved public|single|PUB-04|0 (4829 ms) total=4/72
+[ckpt] saved public|single|PUB-05|0 (3574 ms) total=5/72
+[ckpt] saved public|single|PUB-06|0 (2856 ms) total=6/72
+[ckpt] saved public|staged|PUB-01|0 (7068 ms) total=7/72
+[ckpt] saved public|staged|PUB-02|0 (8863 ms) total=8/72
+[ckpt] saved public|staged|PUB-03|0 (7508 ms) total=9/72
+[ckpt] saved public|staged|PUB-04|0 (7884 ms) total=10/72
+[ckpt] saved public|staged|PUB-05|0 (8441 ms) total=11/72
+[ckpt] saved public|staged|PUB-06|0 (5404 ms) total=12/72
+[ckpt] saved comparison|single|PUB-01|0 (5141 ms) total=13/72
+[ckpt] saved comparison|single|PUB-02|0 (2776 ms) total=14/72
+[ckpt] saved comparison|single|PUB-03|0 (2979 ms) total=15/72
+[ckpt] saved comparison|single|PUB-04|0 (2968 ms) total=16/72
+[ckpt] saved comparison|single|PUB-05|0 (3390 ms) total=17/72
+[ckpt] saved comparison|single|PUB-06|0 (2748 ms) total=18/72
+[ckpt] saved comparison|single|EXT-07|0 (8475 ms) total=19/72
+[ckpt] saved comparison|single|EXT-08|0 (2831 ms) total=20/72
+[ckpt] saved comparison|single|EXT-09|0 (5601 ms) total=21/72
+[ckpt] saved comparison|single|EXT-10|0 (5905 ms) total=22/72
+[ckpt] saved comparison|single|PUB-01|1 (4977 ms) total=23/72
+[ckpt] saved comparison|single|PUB-02|1 (2807 ms) total=24/72
+[ckpt] saved comparison|single|PUB-03|1 (5179 ms) total=25/72
+[ckpt] saved comparison|single|PUB-04|1 (4775 ms) total=26/72
+[ckpt] saved comparison|single|PUB-05|1 (3499 ms) total=27/72
+[ckpt] saved comparison|single|PUB-06|1 (2471 ms) total=28/72
+[ckpt] saved comparison|single|EXT-07|1 (7147 ms) total=29/72
+[ckpt] saved comparison|single|EXT-08|1 (2860 ms) total=30/72
+[ckpt] saved comparison|single|EXT-09|1 (2654 ms) total=31/72
+[ckpt] saved comparison|single|EXT-10|1 (6036 ms) total=32/72
+[ckpt] saved comparison|single|PUB-01|2 (4387 ms) total=33/72
+[ckpt] saved comparison|single|PUB-02|2 (2840 ms) total=34/72
+[ckpt] saved comparison|single|PUB-03|2 (5563 ms) total=35/72
+[ckpt] saved comparison|single|PUB-04|2 (4762 ms) total=36/72
+[ckpt] saved comparison|single|PUB-05|2 (3412 ms) total=37/72
+[ckpt] saved comparison|single|PUB-06|2 (2832 ms) total=38/72
+[ckpt] saved comparison|single|EXT-07|2 (7124 ms) total=39/72
+[ckpt] saved comparison|single|EXT-08|2 (2681 ms) total=40/72
+[ckpt] saved comparison|single|EXT-09|2 (2604 ms) total=41/72
+[ckpt] saved comparison|single|EXT-10|2 (2464 ms) total=42/72
+[ckpt] saved comparison|staged|PUB-01|0 (7636 ms) total=43/72
+[ckpt] saved comparison|staged|PUB-02|0 (8770 ms) total=44/72
+[ckpt] saved comparison|staged|PUB-03|0 (8482 ms) total=45/72
+[ckpt] saved comparison|staged|PUB-04|0 (10629 ms) total=46/72
+[ckpt] saved comparison|staged|PUB-05|0 (7502 ms) total=47/72
+[ckpt] saved comparison|staged|PUB-06|0 (4927 ms) total=48/72
+[ckpt] saved comparison|staged|EXT-07|0 (9319 ms) total=49/72
+[ckpt] saved comparison|staged|EXT-08|0 (5806 ms) total=50/72
+[ckpt] saved comparison|staged|EXT-09|0 (5721 ms) total=51/72
+[ckpt] saved comparison|staged|EXT-10|0 (8541 ms) total=52/72
+[ckpt] saved comparison|staged|PUB-01|1 (7872 ms) total=53/72
+[ckpt] saved comparison|staged|PUB-02|1 (9498 ms) total=54/72
+[ckpt] saved comparison|staged|PUB-03|1 (10117 ms) total=55/72
+[ckpt] saved comparison|staged|PUB-04|1 (7728 ms) total=56/72
+[ckpt] saved comparison|staged|PUB-05|1 (7425 ms) total=57/72
+[ckpt] saved comparison|staged|PUB-06|1 (5427 ms) total=58/72
+[ckpt] saved comparison|staged|EXT-07|1 (15629 ms) total=59/72
+[ckpt] saved comparison|staged|EXT-08|1 (6248 ms) total=60/72
+[ckpt] saved comparison|staged|EXT-09|1 (6011 ms) total=61/72
+[ckpt] saved comparison|staged|EXT-10|1 (8392 ms) total=62/72
+[ckpt] saved comparison|staged|PUB-01|2 (7165 ms) total=63/72
+[ckpt] saved comparison|staged|PUB-02|2 (9560 ms) total=64/72
+[ckpt] saved comparison|staged|PUB-03|2 (8054 ms) total=65/72
+[ckpt] saved comparison|staged|PUB-04|2 (6996 ms) total=66/72
+[ckpt] saved comparison|staged|PUB-05|2 (7607 ms) total=67/72
+[ckpt] saved comparison|staged|PUB-06|2 (5709 ms) total=68/72
+[ckpt] saved comparison|staged|EXT-07|2 (13524 ms) total=69/72
+[ckpt] saved comparison|staged|EXT-08|2 (5702 ms) total=70/72
+[ckpt] saved comparison|staged|EXT-09|2 (5670 ms) total=71/72
+[ckpt] saved comparison|staged|EXT-10|2 (11527 ms) total=72/72
+[ckpt] ALL PLANNED DECISIONS SAVED
+[callmeter] step=anthropic_fresh calls=107 http_200=107 cumulative: calls=109 est_usd=1.2609
+=== runner exit=0 2026-10-08T13:22:08Z
+=== mock API (pid 1004) shut down 2026-10-08T13:22:28Z; exited: yes; health=''

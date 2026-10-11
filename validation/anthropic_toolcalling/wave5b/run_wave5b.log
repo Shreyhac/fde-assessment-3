@@ -1,0 +1,16 @@
+=== wave5b (HO-B1..B5, business-purpose prompt rule) start 2026-10-08T19:34:41Z; cap $0.60
+[ckpt] perturbation|single|HO-B1|0 PASS approval_review
+[ckpt] perturbation|single|HO-B2|0 PASS clarify
+[ckpt] perturbation|single|HO-B3|0 PASS clarify
+[ckpt] perturbation|single|HO-B4|0 PASS clarify
+[ckpt] perturbation|single|HO-B5|0 PASS clarify
+[ckpt] perturbation|staged|HO-B1|0 FAIL reuse_review
+[ckpt] FAIL DETAIL {"route_match": false, "flags_present": true, "flags_absent": true, "no_model_failure": true} ['existing_tool_overlap']
+[ckpt] perturbation|staged|HO-B2|0 PASS clarify
+[ckpt] perturbation|staged|HO-B3|0 PASS clarify
+[ckpt] perturbation|staged|HO-B4|0 PASS clarify
+[ckpt] perturbation|staged|HO-B5|0 PASS clarify
+[ckpt] heldout_cases.json: 9/10 PASSED
+failed cases: perturbation|staged|HO-B1|0
+[callmeter] step=wave5b calls=25 http_200=25 cumulative: calls=25 est_usd=0.2774
+=== runner exit=1 2026-10-08T19:35:52Z

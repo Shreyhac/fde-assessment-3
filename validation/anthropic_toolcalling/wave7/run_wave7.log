@@ -1,0 +1,24 @@
+=== wave7 (comparison set REQ-1001..REQ-1010, both architectures, 1 repeat, final prompt with business-purpose rule) start 2026-10-08T20:29:34Z; cap $2.50; fresh ledger
+[ckpt] comparison|single|PUB-01|0 reuse_review model reuse_review archived-match 
+[ckpt] comparison|single|PUB-02|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|PUB-03|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|PUB-04|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|PUB-05|0 clarify model clarify archived-match injection
+[ckpt] comparison|single|PUB-06|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|EXT-07|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|EXT-08|0 manual_review model manual_review archived-match 
+[ckpt] comparison|single|EXT-09|0 reuse_review model reuse_review archived-match 
+[ckpt] comparison|single|EXT-10|0 approval_review model approval_review archived-match 
+[ckpt] comparison|staged|PUB-01|0 reuse_review model reuse_review archived-match 
+[ckpt] comparison|staged|PUB-02|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|PUB-03|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|PUB-04|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|PUB-05|0 clarify model clarify archived-match injection
+[ckpt] comparison|staged|PUB-06|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|EXT-07|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|EXT-08|0 manual_review model manual_review archived-match 
+[ckpt] comparison|staged|EXT-09|0 reuse_review model reuse_review archived-match 
+[ckpt] comparison|staged|EXT-10|0 approval_review model approval_review archived-match 
+[ckpt] wave7: single route_match 10/10 matches_archived 10/10; staged route_match 10/10 matches_archived 10/10
+[callmeter] step=wave7 calls=50 http_200=50 cumulative: calls=50 est_usd=0.5629
+=== runner exit=0 2026-10-08T20:32:05Z

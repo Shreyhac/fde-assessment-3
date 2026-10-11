@@ -1,0 +1,27 @@
+diff --git a/AI_Procurement_Copilot/validation/anthropic_fresh/wave1_backup/model_wave1.py b/AI_Procurement_Copilot/src/model.py
+index d3c2150..841a4b9 100644
+--- a/AI_Procurement_Copilot/validation/anthropic_fresh/wave1_backup/model_wave1.py
++++ b/AI_Procurement_Copilot/src/model.py
+@@ -17,7 +17,9 @@ Interpret the business need and whether catalog matches solve it; surface credib
+ Return an object with route (clarify, reuse_review, manual_review, approval_review), reason, evidence_ids, gap_reason.
+ No extra prose. Missing material data -> clarify. Stale/conflicting/unavailable evidence -> manual_review.
+ Existing match -> reuse_review unless a credible gap justifies review of new purchase. Otherwise approval_review.
+-Every route still needs a human. You cannot alter financial checks or approval roles.'''
++Every route still needs a human. You cannot alter financial checks or approval roles.
++Length limits (output longer than the absolute limits is rejected): keep reason concise, aim for 500 characters or fewer,
++absolute maximum 700 characters; keep gap_reason to 250 characters or fewer, absolute maximum 400 characters, empty if no gap.'''
+ 
+ GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+ 
+@@ -53,8 +55,9 @@ def infer_anthropic(pack, role):
+     if not key: raise RuntimeError('No Anthropic provider key')
+     schema = {'type': 'object', 'properties': {
+         'route': {'type': 'string', 'enum': ['clarify', 'reuse_review', 'manual_review', 'approval_review']},
+-        'reason': {'type': 'string'}, 'evidence_ids': {'type': 'array', 'items': {'type': 'string'}},
+-        'gap_reason': {'type': 'string'}},
++        'reason': {'type': 'string', 'description': 'Concise justification citing supplied evidence. Aim for 500 characters or fewer; absolute maximum 700 characters.'},
++        'evidence_ids': {'type': 'array', 'items': {'type': 'string'}},
++        'gap_reason': {'type': 'string', 'description': 'Credible gap or missing item, or empty string if none. Aim for 250 characters or fewer; absolute maximum 400 characters.'}},
+         'required': ['route', 'reason', 'evidence_ids', 'gap_reason'], 'additionalProperties': False}
+     body = {'model': os.getenv('MODEL_NAME', 'claude-sonnet-5-5'), 'max_tokens': 4096,
+             'system': SYSTEM + '\nYour role: ' + role,

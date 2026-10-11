@@ -1,0 +1,95 @@
+--- validation/anthropic_fresh/pre_install_backup/src/model.py	2026-10-08 13:03:11.006030441 +0000
++++ src/model.py	2026-10-08 13:03:11.011067886 +0000
+@@ -21,7 +21,7 @@
+ 
+ GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+ 
+-def infer(pack, role):
++def infer_gemini(pack, role):
+     import httpx
+     key = os.getenv('GEMINI_API_KEY', '')
+     model = os.getenv('MODEL_NAME', 'gemini-2.5-flash')
+@@ -33,12 +33,43 @@
+             'contents': [{'role': 'user', 'parts': [{'text': json.dumps(pack, default=str)}]}],
+             'generationConfig': {'temperature': 0, 'maxOutputTokens': 4096,
+                                  'responseMimeType': 'application/json', 'responseSchema': schema}}
+-    # With no local key in network-secret mode, omit the header so the egress proxy supplies it.
+-    headers = {} if not key and os.getenv('GEMINI_NETWORK_SECRET') == '1' else {'x-goog-api-key': key}
+-    r = httpx.post(GEMINI_URL.format(model=model), headers=headers, json=body, timeout=25.0)
++    r = httpx.post(GEMINI_URL.format(model=model), headers={'x-goog-api-key': key}, json=body, timeout=25.0)
+     r.raise_for_status()
+     parts = r.json()['candidates'][0]['content']['parts']
+     result = Advice.model_validate_json(''.join(p.get('text', '') for p in parts))
+     known = {e['id'] for e in pack['evidence']}
+     if not set(result.evidence_ids).issubset(known): raise ValueError('Ungrounded evidence IDs')
+     return result
++
++
++def provider_key_name():
++    provider = os.getenv('MODEL_PROVIDER', 'anthropic').lower()
++    if provider not in ('gemini', 'anthropic'): raise ValueError('Unknown model provider')
++    return 'FDE3_ANTHROPIC_API_KEY' if provider == 'anthropic' else 'GEMINI_API_KEY'
++
++def infer_anthropic(pack, role):
++    import httpx
++    key = os.getenv('FDE3_ANTHROPIC_API_KEY', '')
++    if not key: raise RuntimeError('No Anthropic provider key')
++    schema = {'type': 'object', 'properties': {
++        'route': {'type': 'string', 'enum': ['clarify', 'reuse_review', 'manual_review', 'approval_review']},
++        'reason': {'type': 'string'}, 'evidence_ids': {'type': 'array', 'items': {'type': 'string'}},
++        'gap_reason': {'type': 'string'}},
++        'required': ['route', 'reason', 'evidence_ids', 'gap_reason'], 'additionalProperties': False}
++    body = {'model': os.getenv('MODEL_NAME', 'claude-sonnet-5-5'), 'max_tokens': 4096,
++            'system': SYSTEM + '\nYour role: ' + role,
++            'messages': [{'role': 'user', 'content': json.dumps(pack, default=str)}],
++            'thinking': {'type': 'adaptive'},
++            'output_config': {'effort': 'high', 'format': {'type': 'json_schema', 'schema': schema}}}
++    r = httpx.post('https://api.anthropic.com/v1/messages',
++                   headers={'x-api-key': key, 'anthropic-version': '2023-06-01'}, json=body, timeout=25.0)
++    r.raise_for_status()
++    response = r.json()
++    if response.get('stop_reason') != 'end_turn': raise ValueError('Incomplete or refused model output')
++    result = Advice.model_validate_json(''.join(p.get('text', '') for p in response['content'] if p.get('type') == 'text'))
++    known = {e['id'] for e in pack['evidence']}
++    if not set(result.evidence_ids).issubset(known): raise ValueError('Ungrounded evidence IDs')
++    return result
++
++def infer(pack, role):
++    return infer_anthropic(pack, role) if provider_key_name() == 'FDE3_ANTHROPIC_API_KEY' else infer_gemini(pack, role)
+--- validation/anthropic_fresh/pre_install_backup/src/solution.py	2026-10-08 13:03:11.006071204 +0000
++++ src/solution.py	2026-10-08 13:03:11.011359083 +0000
+@@ -4,7 +4,7 @@
+ from src.contracts import Architecture, ProcurementDecision, EvidenceItem, RunTelemetry
+ from src import data_access as db
+ from src.tools import Tools
+-from src.model import infer
++from src.model import infer, provider_key_name
+ load_dotenv(db.ROOT / '.env', override=False)
+ 
+ 
+@@ -36,8 +36,7 @@
+     reason = 'Offline rule preview. Semantic need/gap interpretation has not been model-verified.'
+     if mode == 'live':
+         try:
+-            # Local key, or a network-injected key (proxy adds the header; key never enters env/files).
+-            if not (os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_NETWORK_SECRET') == '1'): raise RuntimeError('No provider key')
++            if not os.getenv(provider_key_name()): raise RuntimeError('No provider key')
+             calls += 1
+             advice = infer(model_pack, 'Procurement Agent' if architecture == 'single' else 'Procurement Analyst')
+             if architecture == 'staged':
+@@ -56,7 +55,7 @@
+             route = 'manual_review'
+     elif mode != 'offline': raise ValueError('COPILOT_MODE must be offline or live')
+     import json
+-    evidence.append({'id':'model_advice','source':'model_advice','finding':{'mode':mode,'code_route':code_route,'final_route':route,'route_locked_by_code':code_route in ('clarify','manual_review'), 'advice':advice.model_dump() if advice else None},'reference':'src/model.py + src/solution.py'})
++    evidence.append({'id':'model_advice','source':'model_advice','finding':{'mode':mode,'provider':os.getenv('MODEL_PROVIDER','anthropic'),'model':os.getenv('MODEL_NAME','claude-sonnet-5-5' if os.getenv('MODEL_PROVIDER','anthropic')=='anthropic' else 'gemini-2.5-flash'),'code_route':code_route,'final_route':route,'route_locked_by_code':code_route in ('clarify','manual_review'), 'advice':advice.model_dump() if advice else None},'reference':'src/model.py + src/solution.py'})
+     label = {'clarify':'Request clarification', 'manual_review':'Hold for manual review',
+              'reuse_review':'Review existing tool before new purchase', 'approval_review':'Route for human approval'}[route]
+     next_step = ('Ask requester to supply: ' + ', '.join(controls['requester_missing'] or missing) + '. Then rerun checks.' if route == 'clarify' else
+--- validation/anthropic_fresh/pre_install_backup/tests/conftest.py	2026-10-08 13:03:11.008412872 +0000
++++ tests/conftest.py	2026-10-08 13:03:11.013883940 +0000
+@@ -3,3 +3,4 @@
+ @pytest.fixture(autouse=True)
+ def offline_default(monkeypatch):
+     monkeypatch.setenv('COPILOT_MODE','offline')
++    monkeypatch.setenv('MODEL_PROVIDER','gemini')

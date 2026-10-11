@@ -1,0 +1,10 @@
+{
+ "est_usd": 0.8499119999999999,
+ "calls": 70,
+ "http_200": 70,
+ "tokens": {
+  "input_tokens": 262151,
+  "output_tokens": 32561
+ },
+ "logical": 70
+}
